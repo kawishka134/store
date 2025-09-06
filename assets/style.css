@@ -1,0 +1,156 @@
+/* Custom styles for the Inventory App */
+
+/* Dark mode transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* View sections */
+.view-section {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table styles */
+.table-row-hover:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.dark .table-row-hover:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Low stock indicator */
+.low-stock-indicator {
+    position: relative;
+}
+
+.low-stock-indicator::after {
+    content: "LOW";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.625rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Toast notification */
+#toast {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, 100%); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* Mobile navigation */
+@media (max-width: 767px) {
+    main {
+        padding-bottom: 5rem;
+    }
+}
+
+/* Desktop layout adjustment */
+@media (min-width: 768px) {
+    main {
+        margin-left: 16rem;
+    }
+}
+
+/* Form input focus styles */
+input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* Modal animation */
+.modal-backdrop {
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    animation: slideUp 0.3s ease;
+}
+
+/* Button hover states */
+.btn-hover {
+    transition: all 0.2s ease;
+}
+
+.btn-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-hover:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Table cell ellipsis for long content */
+.table-cell-ellipsis {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive table for mobile */
+@media (max-width: 640px) {
+    .mobile-table {
+        display: block;
+    }
+    
+    .mobile-table thead, 
+    .mobile-table tbody, 
+    .mobile-table th, 
+    .mobile-table td, 
+    .mobile-table tr {
+        display: block;
+    }
+    
+    .mobile-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .mobile-table tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+    
+    .mobile-table td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+    
+    .mobile-table td:before {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+    
+    .mobile-table td:nth-of-type(1):before { content: "Name"; }
+    .mobile-table td:nth-of-type(2):before { content: "Category"; }
+    .mobile-table td:nth-of-type(3):before { content: "Unit"; }
+    .mobile-table td:nth-of-type(4):before { content: "Cost Price"; }
+    .mobile-table td:nth-of-type(5):before { content: "Sell Price"; }
+    .mobile-table td:nth-of-type(6):before { content: "Notes"; }
+    .mobile-table td:nth-of-type(7):before { content: "Actions"; }
+}
