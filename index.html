@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="si" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ගබඩා ➜ ශොප් Inventory</title>
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Header -->
+    <header class="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <h1 class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">ගබඩා ➜ ශොප් Inventory</h1>
+            
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button id="export-csv-btn" class="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-1 text-sm transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Download CSV</span>
+                </button>
+                
+                <button id="import-csv-btn" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1 text-sm transition-colors">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span>Import CSV</span>
+                </button>
+                
+                <button id="theme-toggle" class="p-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                    <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-6 pb-20 md:pb-6">
+        <!-- Dashboard View -->
+        <section id="view-dashboard" class="view-section">
+            <h2 class="text-2xl font-bold mb-6">සාරාංශය</h2>
+            
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">භාණ්ඩ වර්ග</p>
+                            <p id="total-items" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                            <i data-lucide="package" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">ගබඩාවේ ප්‍රමාණය</p>
+                            <p id="total-warehouse" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-lg">
+                            <i data-lucide="warehouse" class="w-6 h-6 text-amber-600 dark:text-amber-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">ශොප් හි ප්‍රමාණය</p>
+                            <p id="total-shop" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                            <i data-lucide="store" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">ගබඩා වටිනාකම</p>
+                            <p id="warehouse-value" class="text-2xl font-bold mt-1">Rs. 0</p>
+                        </div>
+                        <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">ශොප් වටිනාකම</p>
+                            <p id="shop-value" class="text-2xl font-bold mt-1">Rs. 0</p>
+                        </div>
+                        <div class="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-lg">
+                            <i data-lucide="dollar-sign" class="w-6 h-6 text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">විකුණුම් අපේක්ෂාව</p>
+                            <p id="potential-revenue" class="text-2xl font-bold mt-1">Rs. 0</p>
+                        </div>
+                        <div class="bg-pink-100 dark:bg-pink-900/30 p-3 rounded-lg">
+                            <i data-lucide="bar-chart-3" class="w-6 h-6 text-pink-600 dark:text-pink-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 mb-8">
+                <h3 class="text-lg font-semibold mb-4">ක්ෂණික ක්‍රියා</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button id="quick-add-item" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>ඇතුල් කරන්න</span>
+                    </button>
+                    
+                    <button id="quick-transfer" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                        <i data-lucide="truck" class="w-5 h-5"></i>
+                        <span>මාරු කරන්න</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">
+                <h3 class="text-lg font-semibold mb-4">මෑත ක්‍රියාකාරකම්</h3>
+                <div id="recent-activity" class="space-y-3">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">මෑත ක්‍රියාකාරකම් නැත</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Items View -->
+        <section id="view-items" class="view-section hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+                <h2 class="text-2xl font-bold">භාණ්ඩ වර්ග</h2>
+                <button id="add-item-btn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span>නව භාණ්දයක් එක් කරන්න</span>
+                </button>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" id="items-search" placeholder="භාණ්ඩ සෙවුම..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <select id="items-category-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම කාණ්ඩ</option>
+                        </select>
+                        
+                        <button id="items-sort-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors">
+                            <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                            <span>අනුපිළිවෙල</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Items Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">නම</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">කාණ්ඩය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ඒකකය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">මිල (මිලදී ගැනීම)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">මිල (විකුණුම)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">සටහන්</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ක්‍රියා</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Items will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="items-empty-state" class="text-center py-12 hidden">
+                    <i data-lucide="package-open" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">භාණ්ඩ නැත</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">ඔබට තවමත් භාණ්ඩ එක් කර නැත</p>
+                    <button class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 mx-auto transition-colors">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>පළමු භාණ්දය එක් කරන්න</span>
+                    </button>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        පෙන්වන්න <span id="items-pagination-start">0</span> සිට <span id="items-pagination-end">0</span> දක්වා, සම්පූර්ණ <span id="items-pagination-total">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="items-pagination-prev" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button id="items-pagination-next" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Warehouse View -->
+        <section id="view-warehouse" class="view-section hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+                <h2 class="text-2xl font-bold">ගබඩාව</h2>
+                <button id="warehouse-bulk-update-btn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                    <i data-lucide="edit" class="w-5 h-5"></i>
+                    <span>Bulk Update</span>
+                </button>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" id="warehouse-search" placeholder="භාණ්ඩ සෙවුම..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <select id="warehouse-category-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම කාණ්ඩ</option>
+                        </select>
+                        
+                        <select id="warehouse-stock-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම තත්ත්ව</option>
+                            <option value="low">අඩු තොග</option>
+                            <option value="normal">සාමාන්‍ය තොග</option>
+                            <option value="zero">නොමැත</option>
+                        </select>
+                        
+                        <button id="warehouse-sort-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors">
+                            <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                            <span>අනුපිළිවෙල</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Warehouse Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">නම</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">කාණ්ඩය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ඒකකය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">මිල (මිලදී ගැනීම)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ප්‍රමාණය</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ක්‍රියා</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warehouse-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Items will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="warehouse-empty-state" class="text-center py-12 hidden">
+                    <i data-lucide="warehouse" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">ගබඩාවේ භාණ්ඩ නැත</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">ඔබට තවමත් භාණ්ඩ එක් කර නැත</p>
+                    <button class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 mx-auto transition-colors">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>පළමු භාණ්දය එක් කරන්න</span>
+                    </button>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        පෙන්වන්න <span id="warehouse-pagination-start">0</span> සිට <span id="warehouse-pagination-end">0</span> දක්වා, සම්පූර්ණ <span id="warehouse-pagination-total">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="warehouse-pagination-prev" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button id="warehouse-pagination-next" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shop View -->
+        <section id="view-shop" class="view-section hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+                <h2 class="text-2xl font-bold">ශොප්</h2>
+                <button id="shop-bulk-update-btn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                    <i data-lucide="edit" class="w-5 h-5"></i>
+                    <span>Bulk Update</span>
+                </button>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" id="shop-search" placeholder="භාණ්ඩ සෙවුම..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <select id="shop-category-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම කාණ්ඩ</option>
+                        </select>
+                        
+                        <select id="shop-stock-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම තත්ත්ව</option>
+                            <option value="low">අඩු තොග</option>
+                            <option value="normal">සාමාන්‍ය තොග</option>
+                            <option value="zero">නොමැත</option>
+                        </select>
+                        
+                        <button id="shop-sort-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors">
+                            <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                            <span>අනුපිළිවෙල</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shop Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">නම</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">කාණ්ඩය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ඒකකය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">මිල (විකුණුම)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ප්‍රමාණය</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ක්‍රියා</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shop-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Items will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="shop-empty-state" class="text-center py-12 hidden">
+                    <i data-lucide="store" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">ශොප් හි භාණ්ඩ නැත</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">ඔබට තවමත් භාණ්ඩ එක් කර නැත</p>
+                    <button class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 mx-auto transition-colors">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>පළමු භාණ්දය එක් කරන්න</span>
+                    </button>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        පෙන්වන්න <span id="shop-pagination-start">0</span> සිට <span id="shop-pagination-end">0</span> දක්වා, සම්පූර්ණ <span id="shop-pagination-total">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="shop-pagination-prev" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button id="shop-pagination-next" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transfer View -->
+        <section id="view-transfer" class="view-section hidden">
+            <h2 class="text-2xl font-bold mb-6">මාරු කිරීම (ගබඩාව → ශොප්)</h2>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 max-w-3xl mx-auto">
+                <form id="transfer-form">
+                    <div class="mb-5">
+                        <label for="transfer-item" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">භාණ්දය</label>
+                        <select id="transfer-item" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">භාණ්දය තෝරන්න</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label for="transfer-quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ප්‍රමාණය</label>
+                        <input type="number" id="transfer-quantity" min="1" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label for="transfer-note" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">සටහන (විකල්ප)</label>
+                        <textarea id="transfer-note" rows="2" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button type="button" id="transfer-reset-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                            යළි සකසන්න
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                            <i data-lucide="truck" class="w-5 h-5"></i>
+                            <span>මාරු කරන්න</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="transfer-item-details" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                    <h3 class="font-medium mb-2">භාණ්දයේ විස්තර</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">ගබඩාවේ ප්‍රමාණය</p>
+                            <p id="transfer-item-warehouse-qty" class="font-medium">0</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">ශොප් හි ප්‍රමාණය</p>
+                            <p id="transfer-item-shop-qty" class="font-medium">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Transfers -->
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">මෑත මාරු කිරීම්</h3>
+                <div id="recent-transfers" class="space-y-3">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">මෑත මාරු කිරීම් නැත</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Logs View -->
+        <section id="view-logs" class="view-section hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+                <h2 class="text-2xl font-bold">ලොග්</h2>
+                <button id="export-logs-btn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center gap-2 transition-colors">
+                    <i data-lucide="download" class="w-5 h-5"></i>
+                    <span>Export Logs</span>
+                </button>
+            </div>
+            
+            <!-- Filter -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" id="logs-search" placeholder="ලොග් සෙවුම..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <select id="logs-type-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="">සියලුම වර්ග</option>
+                            <option value="create">නිර්මාණය</option>
+                            <option value="update">යාවත්කිරීම</option>
+                            <option value="delete">මකා දැමීම</option>
+                            <option value="transfer">මාරු කිරීම</option>
+                            <option value="import">ආයාත කිරීම</option>
+                        </select>
+                        
+                        <button id="logs-sort-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors">
+                            <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                            <span>අනුපිළිවෙල</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Logs Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">දිනය සහ වේලාව</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">වර්ගය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">භාණ්දය</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">විස්තර</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Logs will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="logs-empty-state" class="text-center py-12 hidden">
+                    <i data-lucide="file-text" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">ලොග් නැත</h3>
+                    <p class="text-gray-500 dark:text-gray-400">තවමත් කිසිදු ක්‍රියාකාරකමක් සිදු කර නැත</p>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        පෙන්වන්න <span id="logs-pagination-start">0</span> සිට <span id="logs-pagination-end">0</span> දක්වා, සම්පූර්ණ <span id="logs-pagination-total">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="logs-pagination-prev" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button id="logs-pagination-next" class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="view-settings" class="view-section hidden">
+            <h2 class="text-2xl font-bold mb-6">සැකසුම්</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- General Settings -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">පොදු සැකසුම්</h3>
+                    
+                    <div class="mb-5">
+                        <label for="currency-symbol" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">මුදල් සලකුණ</label>
+                        <input type="text" id="currency-symbol" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label for="low-stock-threshold" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">අඩු තොග සීමාව</label>
+                        <input type="number" id="low-stock-threshold" min="0" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">භාෂාව</label>
+                        <select id="language" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="si">සිංහල</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    
+                    <button id="save-settings-btn" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+                        සුරකින්න
+                    </button>
+                </div>
+                
+                <!-- Data Management -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">දත්ත කළමනාකරණය</h3>
+                    
+                    <div class="mb-5">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">දත්ත උපස්ථ කිරීම</h4>
+                        <button id="backup-data-btn" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span>Download JSON Backup</span>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">දත්ත ප්‍රතිසාධනය</h4>
+                        <div class="flex gap-2">
+                            <input type="file" id="restore-data-input" accept=".json" class="hidden">
+                            <button id="restore-data-btn" class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                <i data-lucide="upload" class="w-5 h-5"></i>
+                                <span>Upload JSON Backup</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">දත්ත මකා දැමීම</h4>
+                        <button id="clear-data-btn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            <span>Clear All Data</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- App Info -->
+            <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">යෙදුම් තොරතුරු</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500 dark:text-gray-400">නම</p>
+                        <p class="font-medium">ගබඩා ➜ ශොප් Inventory</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 dark:text-gray-400">අනුවාදය</p>
+                        <p class="font-medium" id="app-version">1.0.0</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 dark:text-gray-400">දත්ත ආකෘතියේ අනුවාදය</p>
+                        <p class="font-medium" id="data-version">1.0.0</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 dark:text-gray-400">බලපත්‍රය</p>
+                        <p class="font-medium">MIT</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 z-10 md:hidden">
+        <div class="flex justify-around">
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-primary-600 dark:text-primary-400" data-view="dashboard">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">මුල් පිටුව</span>
+            </button>
+            
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-gray-500 dark:text-gray-400" data-view="items">
+                <i data-lucide="package" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">භාණ්ඩ</span>
+            </button>
+            
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-gray-500 dark:text-gray-400" data-view="warehouse">
+                <i data-lucide="warehouse" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">ගබඩාව</span>
+            </button>
+            
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-gray-500 dark:text-gray-400" data-view="shop">
+                <i data-lucide="store" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">ශොප්</span>
+            </button>
+            
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-gray-500 dark:text-gray-400" data-view="transfer">
+                <i data-lucide="truck" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">මාරු</span>
+            </button>
+            
+            <button class="nav-btn flex flex-col items-center justify-center py-2 px-4 text-gray-500 dark:text-gray-400" data-view="logs">
+                <i data-lucide="file-text" class="w-6 h-6"></i>
+                <span class="text-xs mt-1">ලොග්</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:block fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 z-10 overflow-y-auto">
+        <div class="p-4">
+            <ul class="space-y-1">
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20" data-view="dashboard">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span>මුල් පිටුව</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="items">
+                        <i data-lucide="package" class="w-5 h-5"></i>
+                        <span>භාණ්ඩ</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="warehouse">
+                        <i data-lucide="warehouse" class="w-5 h-5"></i>
+                        <span>ගබඩාව</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="shop">
+                        <i data-lucide="store" class="w-5 h-5"></i>
+                        <span>ශොප්</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="transfer">
+                        <i data-lucide="truck" class="w-5 h-5"></i>
+                        <span>මාරු</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="logs">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>ලොග්</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="settings">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>සැකසුම්</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Modals -->
+    <!-- Add/Edit Item Modal -->
+    <div id="item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="item-modal-title" class="text-xl font-bold">නව භාණ්දයක් එක් කරන්න</h3>
+                    <button id="close-item-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <form id="item-form">
+                    <input type="hidden" id="item-id">
+                    
+                    <div class="mb-4">
+                        <label for="item-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">නම *</label>
+                        <input type="text" id="item-name" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="item-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">කාණ්ඩය</label>
+                        <input type="text" id="item-category" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="item-unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ඒකකය</label>
+                        <select id="item-unit" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="pcs">කෑලි (pcs)</option>
+                            <option value="pack">පැක් (pack)</option>
+                            <option value="kg">කිලෝග්රෑම් (kg)</option>
+                            <option value="l">ලීටර් (l)</option>
+                            <option value="box">කොටු (box)</option>
+                            <option value="bottle">බෝතල් (bottle)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="item-cost-price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">මිල (මිලදී ගැනීම) *</label>
+                            <input type="number" id="item-cost-price" min="0" step="0.01" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        
+                        <div>
+                            <label for="item-sell-price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">මිල (විකුණුම) *</label>
+                            <input type="number" id="item-sell-price" min="0" step="0.01" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="item-notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">සටහන්</label>
+                        <textarea id="item-notes" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button type="button" id="cancel-item-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                            අවලංගු කරන්න
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+                            සුරකින්න
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">මකා දැමීම තහවුරු කරන්න</h3>
+                    <button id="close-delete-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <p class="mb-6">ඔබට විශ්වාසද මෙම භාණ්දය මකා දැමීමට? මෙම ක්‍රියාව ප්‍රතිවර්තනය කළ නොහැක.</p>
+                
+                <div class="flex justify-end gap-3">
+                    <button id="cancel-delete-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                        අවලංගු කරන්න
+                    </button>
+                    <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                        මකා දමන්න
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Update Modal -->
+    <div id="bulk-update-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="bulk-update-modal-title" class="text-xl font-bold">Bulk Update</h3>
+                    <button id="close-bulk-update-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">භාණ්ඩ කිහිපයක ප්‍රමාණය එකවර යාවත්කිරීමට පහත තොරතුරු පුරවන්න.</p>
+                </div>
+                
+                <form id="bulk-update-form">
+                    <div class="mb-4">
+                        <label for="bulk-update-location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ස්ථානය</label>
+                        <select id="bulk-update-location" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option value="warehouse">ගබඩාව</option>
+                            <option value="shop">ශොප්</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">භාණ්ඩ</label>
+                        <div class="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 max-h-60 overflow-y-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">නම</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">වත්මන් ප්‍රමාණය</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">නව ප්‍රමාණය</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulk-update-table-body" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <!-- Items will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button type="button" id="cancel-bulk-update-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                            අවලංගු කරන්න
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+                            යාවත්කිරීම් සුරකින්න
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import CSV Modal -->
+    <div id="import-csv-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">CSV ආයාත කිරීම</h3>
+                    <button id="close-import-csv-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="csv-file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CSV ගොනුව තෝරන්න</label>
+                    <input type="file" id="csv-file" accept=".csv" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ආයාත කිරීමේ ක්‍රමය</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="import-method" value="merge" checked class="mr-2">
+                            <span>ඒකාබද්ධ කරන්න (නම අනුව)</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="import-method" value="replace" class="mr-2">
+                            <span>සියල්ල ප්‍රතිස්ථාපනය කරන්න</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="csv-preview-container" class="mb-4 hidden">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">පෙරදසුන (පළමු පේළි 50)</h4>
+                    <div class="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 max-h-60 overflow-y-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                                <tr id="csv-preview-header">
+                                    <!-- Headers will be dynamically added here -->
+                                </tr>
+                            </thead>
+                            <tbody id="csv-preview-body" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="csv-validation-message" class="mb-4 hidden">
+                    <!-- Validation message will be shown here -->
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <button id="cancel-import-csv-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                        අවලංගු කරන්න
+                    </button>
+                    <button id="confirm-import-csv-btn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        ආයාත කරන්න
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export CSV Options Modal -->
+    <div id="export-csv-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">CSV අපනයනය</h3>
+                    <button id="close-export-csv-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="mb-4">ඔබට අපනයනය කිරීමට අවශ්‍ය CSV ගොනුව තෝරන්න:</p>
+                    
+                    <div class="space-y-3">
+                        <button id="export-items-csv-btn" class="w-full px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="package" class="w-5 h-5"></i>
+                            <span>භාණ්ඩ CSV අපනයනය කරන්න</span>
+                        </button>
+                        
+                        <button id="export-logs-csv-btn" class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            <span>ලොග් CSV අපනයනය කරන්න</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button id="cancel-export-csv-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                        අවලංගු කරන්න
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-30 hidden">
+        <i data-lucide="check-circle" class="w-5 h-5"></i>
+        <span id="toast-message">Message</span>
+    </div>
+
+    <!-- App JavaScript -->
+    <script src="assets/app.js"></script>
+</body>
+</html>
